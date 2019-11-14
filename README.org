@@ -1,0 +1,35 @@
+#+title: A Swanky Gerbil
+
+In 2004 I become a lispnick, using Common Lisp. That was just around the time
+that SLIME came out, which is a way to interact with lisp from emacs.
+
+Now, I use gerbil. Yet, SLIME still works, and has a whole bunch of things
+associated with it that are very much needed for my gerbil interaction.
+
+Not only that, but there are a bunch of things in gerbil that I have no idea
+about, whereas long time CL'ing means I know where to find things on that side.
+
+So, this should also help as a bridge between CL and Gerbil. 
+
+
+#+begin_src sh
+gxi -e "(import :drewc/r7rs/gerbil-swank)" -e "(start-swank)"
+#+end_src
+
+
+* Starting from the top>.
+
+#+begin_src gerbil :tangle 
+#+end_src
+
+* Packages, AKA environments, AKA contexts.
+
+
+
+
+
+
+* Contribs
+
+
+
