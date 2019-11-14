@@ -67,7 +67,8 @@
              ($handle-condition condition)
              (swank/abort ($error-description condition)))
            (lambda () (apply h (cdr form))))
-          `(:return (:abort "no handler found") nil)))))
+          (swank/abort (string-append "Cannot find handler for: "
+                                      (symbol->string (car form))))))))
 
 (define start-swank
   (case-lambda (() (start-swank 4005))

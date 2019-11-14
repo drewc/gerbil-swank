@@ -1,3 +1,5 @@
+;; -*- Gerbil -*-
+
 (define ($scheme-name)
   "gerbil-scheme")
 
@@ -26,20 +28,22 @@
         lst))
 
 (define ($function-parameters-and-documentation name)
-  (let* ((binding (call/cc (lambda (k) (with-exception-handler (lambda (c) (k #f)) (lambda () (eval (string->symbol name) (param:environment)))))))
-         (source (if binding (##decompile binding) #f)))
-    (if (and source
-             (pair? source)
-             (not (null? source)))
-        (let ((s (car source)))
-          (case s
-            ((lambda ##lambda)
-             (cons (cons (string->symbol name) (unsyntax-bindings (cadr source)))
-                   (if (string? (caddr source)) (caddr source) #f)))
-            (else
-             (cons #f #f))))
-        (cons #f #f))))
+  (swank:function-parameters-and-documentation name (param:environment)))
 
+  ;; (let* ((binding (with-exception-handler (lambda (c)  #f)
+  ;;                   (lambda () (eval (string->symbol name) (param:environment)))))
+  ;;        (source (if binding (##decompile binding) #f)))
+  ;;   (if (and source
+  ;;            (pair? source)
+  ;;            (not (null? source)))
+  ;;       (let ((s (car source)))
+  ;;         (case s
+  ;;           ((lambda ##lambda)
+  ;;            (cons (cons (string->symbol name) (unsyntax-bindings (cadr source)))
+  ;;                  (if (string? (caddr source)) (caddr source) #f)))
+  ;;           (else
+  ;;            (cons #f #f))))
+  ;;       (cons #f #f)))
 (define ($set-package name)
   (list name name))
 
@@ -55,7 +59,7 @@
 (define hash-table-set! hash-put!)
 (define hash-table-ref/default hash-ref)
 (define hash-table-size hash-length)
-(define hash-table? hash-table?)
+(define hash-table? table?)
 (define (hash-table-walk table fun) (hash-for-each fun table))
 (define hash-table-delete! hash-remove!)
 
@@ -82,6 +86,7 @@
       (let-values ((x (thunk)))
         (swank/write-string (get-output-string o) #f)
         (apply values x)))))
+
 (define (env-name->environment env-name)
   (cond ((or (and (string? env-name) (string=? env-name "(user)"))
              (and (symbol? env-name) (eq? env-name 'nil)))

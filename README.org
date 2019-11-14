@@ -1,3 +1,32 @@
+Drewc's Fork.
+
+Gerbil is as gerbil does.
+
+#+begin_src shell
+gxi -e "(import :drewc/r7rs/gerbil-swank)" -e "(start-swank)"
+#+end_src
+
+* No Handler Found
+
+#+begin_src gerbil
+  (def swank-no-handler-found.orig #f)
+
+  (unless swank-no-handler-found.orig
+    (set! swank-no-handler-found.orig
+      swank-no-handler-found))
+
+  (def handler-table (make-table))
+
+
+
+#+end_src
+
+* Fuzzy Completions
+
+#+begin_src gerbil
+
+
+#+end_src
 * Swankish, a SLIME swank for Schemes
 ** Schemes
    Support for various Schemes varies in quality. Not everything works on every Scheme.

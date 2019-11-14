@@ -12,7 +12,7 @@
                                    (exit `(:return (:abort ,message)
                                                    ,id))))
                     (param:environment ($environment env-name))
-                    (param:current-id id))
+                  (param:current-id id))
        `(:return (:ok ,(process-form sexp env-name))
                  ,id)))))
 
@@ -71,6 +71,19 @@
     (list (car completions+prefix)
           (cdr completions+prefix))))
 
+(define-slime-handler (swank:fuzzy-completions string package . limits)
+  (define (swank-completions->fuzzy completions+prefix)
+    (let* ((c (car completions+prefix))
+           (n (length c))
+           (p (list (list 0 (cdr completions+prefix))))
+           (classification-string "--------"))
+      (list (map (lambda (c) (let ((score n))
+                               (set! n (- n 1))
+                               (list c (number->string score) p classification-string)))
+                 c)
+            0)))
+  (swank-completions->fuzzy ($completions string (unquote-string package))))
+
 (define-slime-handler (swank:compile-string-for-emacs form buffer position filename policy)
   ;; TODO: for now, just evaluate, copy of listener-eval
   (let ((results ($output-to-repl (lambda () (interactive-eval (cons 'begin (read-all (open-input-string form))))))))
@@ -79,6 +92,15 @@
               results)
     `(:compilation-result nil t 0.001 nil nil)))
 
+(define-slime-handler (swank:fuzzy-completion-selected original-string completion)
+  ;; This function is called by Slime when a fuzzy completion is selected by the
+  ;; user. It is for future expansion to make testing, say, a machine learning
+  ;; algorithm for completion scoring easier.
+
+  ;; ORIGINAL-STRING is the string the user completed from, and COMPLETION is
+  ;; the completion object (see docstring for SWANK:FUZZY-COMPLETIONS)
+  ;; corresponding to the completion that the user selected.
+  'nil)
 (define-slime-handler (swank:load-file filename)
   (let ((results ($output-to-repl (lambda () (load filename (param:environment))))))
     'loaded))
