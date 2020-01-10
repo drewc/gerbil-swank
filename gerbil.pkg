@@ -1,1 +1,1 @@
-(package: drewc/r7rs prelude: :scheme/r7rs build: "gerbil-build.ss")
+(package: drewc/r7rs prelude: :scheme/r7rs depend: ("github.com/drewc/gerbil-swank"))
