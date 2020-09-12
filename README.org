@@ -13,23 +13,5 @@ So, this should also help as a bridge between CL and Gerbil.
 
 
 #+begin_src sh
-gxi -e "(import :drewc/r7rs/gerbil-swank)" -e "(start-swank)"
+gxi -e "(import :drewc/gerbil-swank)" -e "(start-swank)"
 #+end_src
-
-
-* Starting from the top>.
-
-#+begin_src gerbil :tangle 
-#+end_src
-
-* Packages, AKA environments, AKA contexts.
-
-
-
-
-
-
-* Contribs
-
-
-
