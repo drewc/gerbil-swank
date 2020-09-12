@@ -1,2 +1,1 @@
-(package: drewc/gerbil-swank)
-
+(package: drewc prelude: :scheme/r7rs)
