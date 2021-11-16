@@ -117,7 +117,7 @@
 
 (define-slime-handler (swank:autodoc expr . params)
   (let* ((op-string (find-string-before-swank-cursor-marker expr)))
-    (if op-string
+    (if (string? op-string)
         (let* ((signature+doc ($function-parameters-and-documentation op-string))
                (signature (car signature+doc))
                (doc (cdr signature+doc)))

@@ -1,0 +1,9 @@
+#+TITLE: Gerbil: A Sly Swank
+
+*Gerbil Swank* is a Swank implemention that allows connections from EMACS Slime
+or Sly modes.
+
+
+manual/index.org for how to use
+
+* Slynk: another protocol

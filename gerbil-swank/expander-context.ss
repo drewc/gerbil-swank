@@ -1,5 +1,6 @@
 prelude: :gerbil/core
-  (import :gerbil/expander :std/iter)
+(import :gerbil/expander :std/iter)
+
 
 
 
@@ -17,7 +18,7 @@ prelude: :gerbil/core
 
   (def (find-expander-context context-designator)
     (if (expander-context? context-designator)
-      context-designator 
+      context-designator
       (let ((tbl (gx#current-expander-module-registry))
             (symbol (if (string? context-designator)
                       (string->symbol context-designator)

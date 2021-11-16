@@ -13,5 +13,16 @@ So, this should also help as a bridge between CL and Gerbil.
 
 
 #+begin_src sh
-gxi -e "(import :drewc/gerbil-swank)" -e "(start-swank)"
+gxi -e "(import :drewc/gerbil-swank :gerbil/gambit/threads)" \
+    -e "(spawn start-swank 4205)" -
+#+end_src
+
+* Install
+
+** Hacking
+
+#+begin_src shell
+git clone git@github.com:drewc/gerbil-swank.git
+cd gerbil-swank && gxpkg link github.com/drewc/gerbil-swank "$(pwd)"
+gxpkg build github.com/drewc/gerbil-swank
 #+end_src

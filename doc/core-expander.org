@@ -1,0 +1,2388 @@
+* Expander Runtime
+  :PROPERTIES:
+  :CUSTOM_ID: expander-runtime
+  :END:
+
+The following procedures are part of the expander API, accessible at
+phi=+1 in the core prelude.
+
+These symbols are part of the =<expander-runtime>= module, defined at
+the core prelude, which you can import directly if you need to work with
+the expander at phi=0, for instance in source processing tools.
+
+#+begin_src scheme
+(import <expander-runtime>)
+#+end_src
+
+** Syntax Errors
+   :PROPERTIES:
+   :CUSTOM_ID: syntax-errors
+   :END:
+
+*** raise-syntax-error
+    :PROPERTIES:
+    :CUSTOM_ID: raise-syntax-error
+    :END:
+
+#+begin_src scheme
+(def (raise-syntax-error where message stx . details) [...])
+#+end_src
+::: tip usage
+
+*** syntax-error?
+    :PROPERTIES:
+    :CUSTOM_ID: syntax-error
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (syntax-error? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+** Syntax Objects
+   :PROPERTIES:
+   :CUSTOM_ID: syntax-objects
+   :END:
+
+*** datum->syntax
+    :PROPERTIES:
+    :CUSTOM_ID: datum-syntax
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (datum->syntax ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** syntax->datum
+    :PROPERTIES:
+    :CUSTOM_ID: syntax-datum
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (syntax->datum ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** syntax-e
+    :PROPERTIES:
+    :CUSTOM_ID: syntax-e
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (syntax-e ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** syntax->list
+    :PROPERTIES:
+    :CUSTOM_ID: syntax-list
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (syntax->list ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+** Identifiers
+   :PROPERTIES:
+   :CUSTOM_ID: identifiers
+   :END:
+
+*** identifier?
+    :PROPERTIES:
+    :CUSTOM_ID: identifier
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (identifier? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** free-identifier=?
+    :PROPERTIES:
+    :CUSTOM_ID: free-identifier
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (free-identifier=? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** bound-identifier=?
+    :PROPERTIES:
+    :CUSTOM_ID: bound-identifier
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (bound-identifier=? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** genident
+    :PROPERTIES:
+    :CUSTOM_ID: genident
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (genident ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** gentemps
+    :PROPERTIES:
+    :CUSTOM_ID: gentemps
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (gentemps ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-identifier
+    :PROPERTIES:
+    :CUSTOM_ID: stx-identifier
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-identifier ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** identifier-list?
+    :PROPERTIES:
+    :CUSTOM_ID: identifier-list
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (identifier-list? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** check-duplicate-identifiers
+    :PROPERTIES:
+    :CUSTOM_ID: check-duplicate-identifiers
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (check-duplicate-identifiers ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** underscore?
+    :PROPERTIES:
+    :CUSTOM_ID: underscore
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (underscore? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** ellipsis?
+    :PROPERTIES:
+    :CUSTOM_ID: ellipsis
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (ellipsis? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+** Utilities
+   :PROPERTIES:
+   :CUSTOM_ID: utilities
+   :END:
+
+*** stx-boolean?
+    :PROPERTIES:
+    :CUSTOM_ID: stx-boolean
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-boolean? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-keyword?
+    :PROPERTIES:
+    :CUSTOM_ID: stx-keyword
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-keyword? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-char?
+    :PROPERTIES:
+    :CUSTOM_ID: stx-char
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-char? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-number?
+    :PROPERTIES:
+    :CUSTOM_ID: stx-number
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-number? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-fixnum?
+    :PROPERTIES:
+    :CUSTOM_ID: stx-fixnum
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-fixnum? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-string?
+    :PROPERTIES:
+    :CUSTOM_ID: stx-string
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-string? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-null?
+    :PROPERTIES:
+    :CUSTOM_ID: stx-null
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-null? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-pair?
+    :PROPERTIES:
+    :CUSTOM_ID: stx-pair
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-pair? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-pair/null?
+    :PROPERTIES:
+    :CUSTOM_ID: stx-pairnull
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-pair/null? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-list?
+    :PROPERTIES:
+    :CUSTOM_ID: stx-list
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-list? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-box?
+    :PROPERTIES:
+    :CUSTOM_ID: stx-box
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-box? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-vector?
+    :PROPERTIES:
+    :CUSTOM_ID: stx-vector
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-vector? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-datum?
+    :PROPERTIES:
+    :CUSTOM_ID: stx-datum
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-datum? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-eq?
+    :PROPERTIES:
+    :CUSTOM_ID: stx-eq
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-eq? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-eqv?
+    :PROPERTIES:
+    :CUSTOM_ID: stx-eqv
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-eqv? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-equal?
+    :PROPERTIES:
+    :CUSTOM_ID: stx-equal
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-equal? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-false?
+    :PROPERTIES:
+    :CUSTOM_ID: stx-false
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-false? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-e
+    :PROPERTIES:
+    :CUSTOM_ID: stx-e
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-e ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-source
+    :PROPERTIES:
+    :CUSTOM_ID: stx-source
+    :END:
+
+#+BEGIN_EXAMPLE
+  (stx-source stx) -> locat | #f
+    stx := syntax
+#+END_EXAMPLE
+
+:::
+
+Returns the source location of a syntax object AST =stx=.
+
+The =locat= structure includes the container and filepos, accessed by
+=##locat-container= and =##locat-filepos=. The filepos has line and
+column information, accessed with =##filepos-line= and =##filepos-col=.
+
+*** stx-wrap-source
+    :PROPERTIES:
+    :CUSTOM_ID: stx-wrap-source
+    :END:
+
+#+BEGIN_EXAMPLE
+  (stx-wrap-source stx src) -> syntax
+    stx := any
+    src := locat
+#+END_EXAMPLE
+
+:::
+
+Produces a new syntax object with source location =src= if =stx= is not
+wrapped as an AST already, otherwise returns =stx= unchanged.
+
+The =locat= structure can be constructed with
+=(##make-locat container filepos)=, where a filepos can be constructed
+with =(##make-filepos line col off)=.
+
+*** stx-car
+    :PROPERTIES:
+    :CUSTOM_ID: stx-car
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-car ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-cdr
+    :PROPERTIES:
+    :CUSTOM_ID: stx-cdr
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-cdr ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-length
+    :PROPERTIES:
+    :CUSTOM_ID: stx-length
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-length ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-for-each
+    :PROPERTIES:
+    :CUSTOM_ID: stx-for-each
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-for-each ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-map
+    :PROPERTIES:
+    :CUSTOM_ID: stx-map
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-map ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-foldl
+    :PROPERTIES:
+    :CUSTOM_ID: stx-foldl
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-foldl ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-foldr
+    :PROPERTIES:
+    :CUSTOM_ID: stx-foldr
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-foldr ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-reverse
+    :PROPERTIES:
+    :CUSTOM_ID: stx-reverse
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-reverse ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-last
+    :PROPERTIES:
+    :CUSTOM_ID: stx-last
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-last ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-last-pair
+    :PROPERTIES:
+    :CUSTOM_ID: stx-last-pair
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-last-pair ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-list-tail
+    :PROPERTIES:
+    :CUSTOM_ID: stx-list-tail
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-list-tail ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-list-ref
+    :PROPERTIES:
+    :CUSTOM_ID: stx-list-ref
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-list-ref ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-andmap
+    :PROPERTIES:
+    :CUSTOM_ID: stx-andmap
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-andmap ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-ormap
+    :PROPERTIES:
+    :CUSTOM_ID: stx-ormap
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-ormap ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-plist?
+    :PROPERTIES:
+    :CUSTOM_ID: stx-plist
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-plist? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** stx-getq
+    :PROPERTIES:
+    :CUSTOM_ID: stx-getq
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (stx-getq ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+** syntax-case
+   :PROPERTIES:
+   :CUSTOM_ID: syntax-case
+   :END:
+
+*** macro-expand-syntax
+    :PROPERTIES:
+    :CUSTOM_ID: macro-expand-syntax
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (macro-expand-syntax ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** macro-expand-syntax-case
+    :PROPERTIES:
+    :CUSTOM_ID: macro-expand-syntax-case
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (macro-expand-syntax-case ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** syntax-pattern?
+    :PROPERTIES:
+    :CUSTOM_ID: syntax-pattern
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (syntax-pattern? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** syntax-local-pattern?
+    :PROPERTIES:
+    :CUSTOM_ID: syntax-local-pattern
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (syntax-local-pattern? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** make-syntax-pattern
+    :PROPERTIES:
+    :CUSTOM_ID: make-syntax-pattern
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (make-syntax-pattern ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** syntax-pattern-id
+    :PROPERTIES:
+    :CUSTOM_ID: syntax-pattern-id
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (syntax-pattern-id ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** syntax-pattern-depth
+    :PROPERTIES:
+    :CUSTOM_ID: syntax-pattern-depth
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (syntax-pattern-depth ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** syntax-check-splice-targets
+    :PROPERTIES:
+    :CUSTOM_ID: syntax-check-splice-targets
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (syntax-check-splice-targets ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** syntax-split-splice
+    :PROPERTIES:
+    :CUSTOM_ID: syntax-split-splice
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (syntax-split-splice ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+** Core Expander
+:PROPERTIES:
+:CUSTOM_ID: core-expander
+:END:
+
+The core of gerbil's expander is made up of ~expander-context~ objects. These
+items that come with an *id* and a *table* are used to expand syntax into the
+transpiled scheme we output.
+
+#+begin_src scheme
+(import :gerbil/expander)
+#+end_src
+
+
+*** current-expander-context
+:PROPERTIES:
+:CUSTOM_ID: current-expander-context
+:END:
+
+To better understand how *Gerbil* as a *Meta-Scheme* expands to another scheme
+it's very useful to know that there is an ~expander-context~ in scope at all
+times.
+
+#+begin_src scheme
+ (let ((cxt (current-expander-context)))
+   [(expander-context-id cxt)
+    (length (hash->list
+             (expander-context-table cxt)))])
+
+;; => (top 1594)
+#+end_src
+
+*** expander-context?
+:PROPERTIES:
+:CUSTOM_ID: expander-context?
+:END:
+
+A boolean that says if the passed object is an ~expander-context~.
+
+#+begin_src scheme
+(expander-context? (current-expander-context)) ;; => #t
+(expander-context? ["nope"]) ;; => #f
+#+end_src
+
+*** expander-context-id
+:PROPERTIES:
+:CUSTOM_ID: expander-context-id
+:END:
+
+All ~expander-context~ objects have an *id* slot that is used to identify and name that context.
+#+begin_src scheme
+(let ((cxt (hash-ref (gx#current-expander-module-registry) 'scheme/r7rs)))
+  [(expander-context-id cxt) (length (hash->list (expander-context-table cxt)))])
+
+;; => (scheme/r7rs 13)
+#+end_src
+
+*** expander-context-table
+:PROPERTIES:
+:CUSTOM_ID: expander-context-table
+:END:
+
+All ~expander-context~ objects have a *table* which contains a *symbol* key and
+a [[#bindings][binding]] value. Those symbols are then bound when expanding syntax within that
+context.
+
+#+begin_src scheme
+(def (get-binding id (cxt (current-expander-context)))
+  (hash-get (expander-context-table cxt) id))
+(get-binding 'foo) ;; => #f
+
+(def foo 1)
+
+(get-binding 'foo) ;; => #<top-binding #47 id: foo key: foo phi: 0>
+
+(get-binding 'list)
+;; => #<import-binding #43 id: list key: list phi: 0 e: #<import-binding #44 id:
+;; list key: list phi: 0 e: #<import-binding #45 id: list key: list phi: 0 e:
+;; #<extern-binding #36 id: list key: list phi: 0> context: #<module-context
+;; #37> weak?: #t> context: #<module-context #46> weak?: #t> context:
+;; #<module-context #2> weak?: #t>
+;;
+
+#+end_src
+
+*** current-expander-marks
+    :PROPERTIES:
+    :CUSTOM_ID: current-expander-marks
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (current-expander-marks ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** current-expander-path
+    :PROPERTIES:
+    :CUSTOM_ID: current-expander-path
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (current-expander-path ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** current-expander-phi
+    :PROPERTIES:
+    :CUSTOM_ID: current-expander-phi
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (current-expander-phi ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** current-module-reader-path
+    :PROPERTIES:
+    :CUSTOM_ID: current-module-reader-path
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (current-module-reader-path ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** current-module-reader-args
+    :PROPERTIES:
+    :CUSTOM_ID: current-module-reader-args
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (current-module-reader-args ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** local-context?
+    :PROPERTIES:
+    :CUSTOM_ID: local-context
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (local-context? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** top-context?
+    :PROPERTIES:
+    :CUSTOM_ID: top-context
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (top-context? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** module-context?
+    :PROPERTIES:
+    :CUSTOM_ID: module-context
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (module-context? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** prelude-context?
+    :PROPERTIES:
+    :CUSTOM_ID: prelude-context
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (prelude-context? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** module-context-ns
+    :PROPERTIES:
+    :CUSTOM_ID: module-context-ns
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (module-context-ns ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** module-context-path
+    :PROPERTIES:
+    :CUSTOM_ID: module-context-path
+    :END:
+
+The path from which this module context was loaded.
+
+#+begin_src scheme
+(import :drewc/gerbil-swank)
+
+(def (get-binding id (cxt (current-expander-context)))
+  (hash-get (expander-context-table cxt) id))
+
+(def cxt (import-binding-context (get-binding 'define-slime-handler)))
+
+
+(module-context-path cxt)
+;; => "/home/drewc/.gerbil/lib/drewc/gerbil-swank.ssi"
+
+#+end_src
+
+
+*** module-context-import
+    :PROPERTIES:
+    :CUSTOM_ID: module-context-import
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (module-context-import ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** module-context-export
+    :PROPERTIES:
+    :CUSTOM_ID: module-context-export
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (module-context-export ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** module-context-code
+    :PROPERTIES:
+    :CUSTOM_ID: module-context-code
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (module-context-code ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** make-local-context
+    :PROPERTIES:
+    :CUSTOM_ID: make-local-context
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (make-local-context ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** eval-syntax
+    :PROPERTIES:
+    :CUSTOM_ID: eval-syntax
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (eval-syntax ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** core-expand
+    :PROPERTIES:
+    :CUSTOM_ID: core-expand
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (core-expand ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** core-expand-head
+    :PROPERTIES:
+    :CUSTOM_ID: core-expand-head
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (core-expand-head ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** core-expand-expression+1
+    :PROPERTIES:
+    :CUSTOM_ID: core-expand-expression1
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (core-expand-expression+1 ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** import-module
+    :PROPERTIES:
+    :CUSTOM_ID: import-module
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (import-module ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** eval-module
+    :PROPERTIES:
+    :CUSTOM_ID: eval-module
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (eval-module ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** core-library-module-path?
+    :PROPERTIES:
+    :CUSTOM_ID: core-library-module-path
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (core-library-module-path? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** core-resolve-library-module-path
+    :PROPERTIES:
+    :CUSTOM_ID: core-resolve-library-module-path
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (core-resolve-library-module-path ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** core-resolve-module-path
+    :PROPERTIES:
+    :CUSTOM_ID: core-resolve-module-path
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (core-resolve-module-path ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** core-quote-syntax
+    :PROPERTIES:
+    :CUSTOM_ID: core-quote-syntax
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (core-quote-syntax ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** core-identifier=?
+    :PROPERTIES:
+    :CUSTOM_ID: core-identifier
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (core-identifier=? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** core-identifier-key
+    :PROPERTIES:
+    :CUSTOM_ID: core-identifier-key
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (core-identifier-key ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** core-apply-expander
+    :PROPERTIES:
+    :CUSTOM_ID: core-apply-expander
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (core-apply-expander ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** syntax-local-introduce
+    :PROPERTIES:
+    :CUSTOM_ID: syntax-local-introduce
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (syntax-local-introduce ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** syntax-local-rewrap
+    :PROPERTIES:
+    :CUSTOM_ID: syntax-local-rewrap
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (syntax-local-rewrap ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** syntax-local-unwrap
+    :PROPERTIES:
+    :CUSTOM_ID: syntax-local-unwrap
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (syntax-local-unwrap ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** syntax-local-e
+    :PROPERTIES:
+    :CUSTOM_ID: syntax-local-e
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (syntax-local-e ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** syntax-local-value
+    :PROPERTIES:
+    :CUSTOM_ID: syntax-local-value
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (syntax-local-value ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+** Bindings
+   :PROPERTIES:
+   :CUSTOM_ID: bindings
+   :END:
+
+Essentially any ~expander-context~ has a
+
+*** resolve-identifier
+    :PROPERTIES:
+    :CUSTOM_ID: resolve-identifier
+    :END:
+
+#+BEGIN_EXAMPLE
+  (resolve-identifier ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** core-resolve-identifier
+    :PROPERTIES:
+    :CUSTOM_ID: core-resolve-identifier
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (core-resolve-identifier ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** binding?
+    :PROPERTIES:
+    :CUSTOM_ID: binding
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (binding? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** binding-id
+    :PROPERTIES:
+    :CUSTOM_ID: binding-id
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (binding-id ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** runtime-binding?
+    :PROPERTIES:
+    :CUSTOM_ID: runtime-binding
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (runtime-binding? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** top-binding?
+    :PROPERTIES:
+    :CUSTOM_ID: top-binding
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (top-binding? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** module-binding?
+    :PROPERTIES:
+    :CUSTOM_ID: module-binding
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (module-binding? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** extern-binding?
+    :PROPERTIES:
+    :CUSTOM_ID: extern-binding
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (extern-binding? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** syntax-binding?
+    :PROPERTIES:
+    :CUSTOM_ID: syntax-binding
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (syntax-binding? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** syntax-binding-e
+    :PROPERTIES:
+    :CUSTOM_ID: syntax-binding-e
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (syntax-binding-e ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** alias-binding?
+    :PROPERTIES:
+    :CUSTOM_ID: alias-binding
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (alias-binding? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** alias-binding-e
+    :PROPERTIES:
+    :CUSTOM_ID: alias-binding-e
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (alias-binding-e ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** import-binding?
+    :PROPERTIES:
+    :CUSTOM_ID: import-binding
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (import-binding? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** import-binding-context
+    :PROPERTIES:
+    :CUSTOM_ID: import-binding-context
+    :END:
+
+The context from which this binding was imported.
+
+#+begin_src scheme
+(import :std/sugar)
+(let* ((binding (hash-get
+                 (expander-context-table (current-expander-context)) 'try))
+       (cxt (import-binding-context binding)))
+  (expander-context-id cxt))
+;; => std/sugar
+#+end_src
+
+Please document me!
+
+*** import-binding-e
+    :PROPERTIES:
+    :CUSTOM_ID: import-binding-e
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (import-binding-e ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+** Expanders
+   :PROPERTIES:
+   :CUSTOM_ID: expanders
+   :END:
+
+*** expander?
+    :PROPERTIES:
+    :CUSTOM_ID: expander
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (expander? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** expander-binding?
+    :PROPERTIES:
+    :CUSTOM_ID: expander-binding
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (expander-binding? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** expander-e
+    :PROPERTIES:
+    :CUSTOM_ID: expander-e
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (expander-e ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** expander-binding-e
+    :PROPERTIES:
+    :CUSTOM_ID: expander-binding-e
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (expander-binding-e ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** feature-expander?
+    :PROPERTIES:
+    :CUSTOM_ID: feature-expander
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (feature-expander? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** user-expander?
+    :PROPERTIES:
+    :CUSTOM_ID: user-expander
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (user-expander? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** make-user-expander
+    :PROPERTIES:
+    :CUSTOM_ID: make-user-expander
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (make-user-expander ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** user-expander-context
+    :PROPERTIES:
+    :CUSTOM_ID: user-expander-context
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (user-expander-context ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** user-expander-phi
+    :PROPERTIES:
+    :CUSTOM_ID: user-expander-phi
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (user-expander-phi ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** import-expander?
+    :PROPERTIES:
+    :CUSTOM_ID: import-expander
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (import-expander? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** make-import-expander
+    :PROPERTIES:
+    :CUSTOM_ID: make-import-expander
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (make-import-expander ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** export-expander?
+    :PROPERTIES:
+    :CUSTOM_ID: export-expander
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (export-expander? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** make-export-expander
+    :PROPERTIES:
+    :CUSTOM_ID: make-export-expander
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (make-export-expander ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** import-export-expander?
+    :PROPERTIES:
+    :CUSTOM_ID: import-export-expander
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (import-export-expander? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** make-import-export-expander
+    :PROPERTIES:
+    :CUSTOM_ID: make-import-export-expander
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (make-import-export-expander ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+** Imports and Exports
+   :PROPERTIES:
+   :CUSTOM_ID: imports-and-exports
+   :END:
+
+*** module-import?
+    :PROPERTIES:
+    :CUSTOM_ID: module-import
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (module-import? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** make-module-import
+    :PROPERTIES:
+    :CUSTOM_ID: make-module-import
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (make-module-import ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** module-import-source
+    :PROPERTIES:
+    :CUSTOM_ID: module-import-source
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (module-import-source ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** module-import-name
+    :PROPERTIES:
+    :CUSTOM_ID: module-import-name
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (module-import-name ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** module-import-phi
+    :PROPERTIES:
+    :CUSTOM_ID: module-import-phi
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (module-import-phi ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** module-import-weak?
+    :PROPERTIES:
+    :CUSTOM_ID: module-import-weak
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (module-import-weak? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** module-export?
+    :PROPERTIES:
+    :CUSTOM_ID: module-export
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (module-export? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** make-module-export
+    :PROPERTIES:
+    :CUSTOM_ID: make-module-export
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (make-module-export ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** module-export-context
+    :PROPERTIES:
+    :CUSTOM_ID: module-export-context
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (module-export-context ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** module-export-key
+    :PROPERTIES:
+    :CUSTOM_ID: module-export-key
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (module-export-key ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** module-export-phi
+    :PROPERTIES:
+    :CUSTOM_ID: module-export-phi
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (module-export-phi ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** module-export-name
+    :PROPERTIES:
+    :CUSTOM_ID: module-export-name
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (module-export-name ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** module-export-weak?
+    :PROPERTIES:
+    :CUSTOM_ID: module-export-weak
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (module-export-weak? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** import-set?
+    :PROPERTIES:
+    :CUSTOM_ID: import-set
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (import-set? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** import-set-source
+    :PROPERTIES:
+    :CUSTOM_ID: import-set-source
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (import-set-source ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** import-set-phi
+    :PROPERTIES:
+    :CUSTOM_ID: import-set-phi
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (import-set-phi ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** import-set-imports
+    :PROPERTIES:
+    :CUSTOM_ID: import-set-imports
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (import-set-imports ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** export-set?
+    :PROPERTIES:
+    :CUSTOM_ID: export-set
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (export-set? ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** export-set-source
+    :PROPERTIES:
+    :CUSTOM_ID: export-set-source
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (export-set-source ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** export-set-phi
+    :PROPERTIES:
+    :CUSTOM_ID: export-set-phi
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (export-set-phi ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** export-set-exports
+    :PROPERTIES:
+    :CUSTOM_ID: export-set-exports
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (export-set-exports ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** core-resolve-module-export
+    :PROPERTIES:
+    :CUSTOM_ID: core-resolve-module-export
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (core-resolve-module-export ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** core-module-export->import
+    :PROPERTIES:
+    :CUSTOM_ID: core-module-export-import
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (core-module-export->import ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** core-expand-import-source
+    :PROPERTIES:
+    :CUSTOM_ID: core-expand-import-source
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (core-expand-import-source ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!
+
+*** core-expand-export-source
+    :PROPERTIES:
+    :CUSTOM_ID: core-expand-export-source
+    :END:
+
+::: tip usage
+
+#+BEGIN_EXAMPLE
+  (core-expand-export-source ...)
+#+END_EXAMPLE
+
+:::
+
+Please document me!

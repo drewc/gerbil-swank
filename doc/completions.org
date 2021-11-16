@@ -1,0 +1,65 @@
+#+TITLE: Completions: TAB'lature!!
+
+I love autocomplete.
+
+Based off of this: https://github.com/joaotavora/sly/blob/master/slynk/slynk-completion.lisp
+
+#+begin_src scheme
+(export #t)
+(import :gerbil/expander
+        :std/pregexp :std/srfi/13 :std/srfi/1 :std/sugar :std/misc/list
+        :drewc/gerbil-swank/package)
+
+(def cxt (gx#current-expander-context))
+(def ctbl (expander-context-table cxt))
+(def clst (table->list (expander-context-table cxt)))
+
+(def pre (gx#current-expander-module-prelude))
+(def ptbl (expander-context-table pre))
+
+(def (mismatch s1 s2)
+  (def l (apply max (map string-length [s1 s2])))
+  (def m (string-compare s1 s2 values values values))
+  (if (= l m) #f m))
+
+(def (accessible-matching pattern cxt)
+  ;; Find symbols flex-matching `pattern` accessible without
+  ;; namespace-qualification. Return an unsorted list of matches.
+  (def syms [])
+  (do-symbols (s cxt)
+    (when (pregexp-match pattern (symbol->string s))
+      (push! s syms)))
+  (reverse syms))
+
+(def (expander-context-ns cxt)
+  (and (module-context? cxt) (module-context-ns cxt)))
+
+(def (namespace-qualified pattern namespace)
+  (def reg (current-expander-module-registry))
+  (def syms [])
+
+  (when (string-index pattern #\#)
+    (for-each
+      (lambda (cxt) (when (equal? (expander-context-ns cxt) namespace)
+                      (do-symbols (s cxt)
+                                  (when (pregexp-match pattern (symbol->string s))
+                                    (push! s syms)))))
+      (map cdr (table->list reg)))
+    syms))
+
+(def (tokenize-symbol str)
+  (def pos (string-index str #\#))
+  (def cxt  (if (not pos) pos
+                 (substring str 0 pos)))
+  (def sym (if (not pos) str
+               (string-drop str (1+ pos))))
+
+  (def internal? (not pos))
+
+  (values sym cxt internal?))
+(def (matching-symbols cxt test))
+
+
+
+
+#+end_src

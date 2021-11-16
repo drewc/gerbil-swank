@@ -1,0 +1,8 @@
+#+TITLE: Swank server for r7rs Schemes subtree
+
+We "forked" https://github.com/ecraven/r7rs-swank for both bleeding edge updates
+and because we don't really care about r7rs :)
+
+Still, in the ~gambit-scheme/r7rs/~ directory is where we take from it.
+
+* ~register-slime-handler!~

@@ -1,0 +1,148 @@
+#+TITLE: 11. Packages: Not Gerbil packages, but modules!
+
+In *CL* symbols have a package. In *Gerbil* a module has symbols and a package
+has modules. Oh, and there's a potential namespace prefix.
+
+This is a translation of the Common Lisp specified packages along with some
+extra goodies.
+
+* Parameter ~*package*~
+
+Value Type:
+
+an expander-context AKA package object.
+
+Initial Value:
+
+the ~"top"~ package, a toplevel context.
+
+Description:
+
+Whatever package object is currently the value of *package* is referred to as
+the current package or the ~current-expander-context~.
+
+#+begin_src scheme :noweb-ref *package*
+(defrules *package* ()
+  (_ (gx#current-expader-context))
+  ((_ args ...) (apply *package* args))
+#+end_src
+
+* Function ~package-name~
+
+Syntax:
+
+package-name package => name
+
+Arguments and Values:
+
+package---a package designator.
+
+name---a string or nil.
+
+#+begin_src scheme :noweb-ref package-name
+(extern namespace: #f &context? &context-t)
+
+(def (package-name package)
+  (def pkg (find-package package))
+  (symbol->string ((if (&context? pkg) &context-t gx#expander-context-id) pkg)))
+#+end_src
+
+* Function ~package-namespace~
+
+* Function ~find-symbol~
+
+- Syntax ::
+
+    find-symbol string &optional package => symbol, status
+
+- Arguments and Values ::
+
+    string---a string.
+
+    package---a package designator. The default is the current package.
+
+    symbol---a symbol accessible in the package, or ~#f~.
+
+    status---one of ~inherited:~, ~external:~, ~internal:~, or ~#f~.
+
+ - Description ::
+
+   ~find-symbol~ locates a symbol whose name is ~string~ in a ~package~. If a
+   symbol named ~string~ is found in ~package~, directly or by inheritance, the
+   symbol found is returned as the first value; the second value is as follows:
+
+    - internal: :: If the symbol is present in package as an internal symbol.
+    - external: :: If the symbol is present in package as an external symbol.
+    - inherited :: If the symbol is inherited by package through use-package,
+      but is not present in package.
+
+If no such symbol is accessible in package, both values are ~#f~.
+
+
+* Function ~find-package~
+Syntax:
+
+find-package name => module
+
+Arguments and Values:
+
+name---a string designator or an expander module.
+
+module---an expander module or #f.
+
+Description:
+
+If ~name~ is a string designator, ~find-package~ locates and returns the module
+whose id is name. This search is case sensitive. If there is no such package,
+find-package returns #f.
+
+If name is an expander module object , that object is returned.
+
+#+begin_src scheme :noweb-ref find-package
+(def (find-package name)
+  (cond ((expander-context? name) name)
+        ((or (and (string? name)
+                  (or (string=? name "(user)")
+                      (string=? name "top")))
+             (and (symbol? name) (eq? name 'nil)))
+         (gx#current-expander-context))
+        (else
+         (let ((name (if (string? name)
+                       (string->symbol name)
+                       name)))
+           (find (lambda (e) (eq? (expander-context-id e) name))
+                 (filter expander-context? (map cdr (hash->list (gx#current-expander-module-registry)))))))))
+
+#+end_src
+
+* Syntax ~do-symbols~
+
+~do-symbols~ iterates over the symbols accessible in package.
+
+#+begin_src scheme :noweb-ref do-symbols
+(defrule (do-context-symbols (name package) body ...)
+  (let ((cxt (find-package package)))
+    (for-each (lambda (x) (let ((name (car x))) body ...))
+              (table->list (expander-context-table cxt)))))
+
+(defrule (do-symbols (name package) body ...)
+  (let do-package ((cxt (find-package package)))
+    (do-context-symbols (name cxt) body ...)
+    (let ((pre (gx#core-context-prelude cxt)))
+      (unless (or (eq? pre cxt) (not pre)) (do-package pre)))))
+
+#+end_src
+
+#+begin_src
+#+end_src
+* File ~package.ss~
+#+begin_src scheme :tangle ../gerbil-swank/package.ss :noweb yes
+(export #t)
+(import :gerbil/expander :std/sugar <expander-runtime>)
+
+<<package-name>>
+
+<<find-package>>
+
+<<do-symbols>>
+#+end_src

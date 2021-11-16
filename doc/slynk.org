@@ -1,0 +1,522 @@
+#+TITLE: SLYNK: Sylvester the Cat's fork of SWANK.
+
+SLY is Sylvester the Cat's Common Lisp IDE for Emacs. It's a fork of SLIME. But more "modern" in certain tastes.
+
+Regardless, we'd like to use it.
+
+* Handlers
+
+** ~slynk:connection-info~
+
+Ok! In *CL*
+
+#+begin_src lisp
+CL-USER> (slynk:connection-info)
+(:PID 6158 :STYLE :SPAWN :ENCODING
+ (:CODING-SYSTEMS ("utf-8-unix" "iso-latin-1-unix")) :LISP-IMPLEMENTATION
+ (:TYPE "SBCL" :NAME "sbcl" :VERSION "2.1.6" :PROGRAM NIL) :MACHINE
+ (:INSTANCE "guyix" :TYPE "X86-64" :VERSION
+  "Intel(R) Core(TM) i7-8650U CPU @ 1.90GHz")
+ :FEATURES
+ (:SLYNK :QUICKLISP :ASDF3.3 :ASDF3.2 :ASDF3.1 :ASDF3 :ASDF2 :ASDF :OS-UNIX
+  :NON-BASE-CHARS-EXIST-P :ASDF-UNICODE :X86-64 :GENCGC :64-BIT :ANSI-CL
+  :COMMON-LISP :ELF :IEEE-FLOATING-POINT :LINUX :LITTLE-ENDIAN
+  :PACKAGE-LOCAL-NICKNAMES :SB-CORE-COMPRESSION :SB-LDB :SB-PACKAGE-LOCKS
+  :SB-THREAD :SB-UNICODE :SBCL :UNIX)
+ :MODULES
+ ("SLYNK/ARGLISTS" "SLYNK/MREPL" "SLYNK/FANCY-INSPECTOR" "SLYNK/PACKAGE-FU"
+  "SLYNK/TRACE-DIALOG" "SLYNK/STICKERS" "SLYNK/INDENTATION" "SLYNK/COMPLETION"
+  "SB-CLTL2" "SB-INTROSPECT" "SB-POSIX" "ASDF" "asdf" "UIOP" "uiop"
+  "SB-BSD-SOCKETS")
+ :PACKAGE (:NAME "COMMON-LISP-USER" :PROMPT "CL-USER") :VERSION "1.0.43")
+#+end_src
+
+And our existing *Gerbil SWANK*.
+
+#+begin_src scheme
+(user)> ((hash-ref *handlers* 'swank:connection-info))
+(:pid 123 :style :spawn :encoding (:coding-systems ("utf-8-unix")) :lisp-implementation (:type "Scheme" :name "gerbil-scheme" :version 123 :program "/usr/bin/scheme") :machine (:instance "host" :type "X86-64") :features (:swank) :modules ("SWANK-ARGLISTS" "SWANK-REPL" "SWANK-PRESENTATIONS") :package (:name "(user)" :prompt "(user)") :version "2.24")
+#+end_src
+
+Now our turn.
+
+#+begin_src scheme :noweb-ref connection-info
+
+
+(def (slynk-version-string) "1.0.43")
+
+(def (connection-info
+      version: (v (slynk-version-string))
+      features: (features '(:slynk))
+      modules: (modules '("SLYNK/ARGLISTS"
+                          "SLYNK/MREPL"
+                         "SLYNK/FANCY-INSPECTOR"
+                         "SLYNK/PACKAGE-FU"
+                          "SLYNK/TRACE-DIALOG"
+                         "SLYNK/STICKERS"
+                         "SLYNK/INDENTATION"
+                          "SLYNK/COMPLETION")))
+  `(:pid ,(getpid) :version ,v
+    :modules ,modules
+    :features ,features
+    :package (:name "(user)" :prompt "top")
+    :style :spawn :encoding (:coding-systems ("utf-8-unix"))
+    :machine (:instance ,(host-name) :type "X86-64")
+    :lisp-implementation (:type "Scheme" :name "gerbil"
+                          :version ,(gerbil-version-string) :program nil)))
+
+(rswank:register-slime-handler! 'slynk:connection-info connection-info)
+
+#+end_src
+
+** ~:CHANNEL-SEND~ and the ~:EMACS-CHANNEL-SEND~ handler
+
+#+begin_quote
+The primitives :CHANNEL-SEND and :EMACS-CHANNEL-SEND implement channel methods.
+Channels are named by number, and normally have a special serving thread in the
+Common Lisp implementation of Slynk. Here is an extract showing the :PROCESS,
+:WRITE-VALUES and :PROMPT channel methods for the REPL.
+
+(:emacs-channel-send 1
+                     (:process "(list 1 2 3)"))
+(:channel-send 1
+               (:write-values
+                (("(1 2 3)" 2))))
+(:channel-send 1
+               (:prompt "COMMON-LISP-USER" "CL-USER" 0))
+
+-- https://github.com/joaotavora/sly/blob/master/CONTRIBUTING.md
+#+end_quote
+
+#+begin_src scheme :noweb-ref channel-send
+(def (:channel-send chann form)
+  (rswank:write-message `(:channel-send ,chann ,form)))
+#+end_src
+
+Now the idea of emacs channels as I see them.
+
+#+begin_src scheme :noweb-ref emacs-channel-send
+(def emacs-channels (make-hash-table-eqv))
+
+(def current-emacs-channel (make-parameter #f))
+
+(defstruct emacs-channel (id package values)
+  constructor: :init!)
+
+
+(defmethod {:init! emacs-channel}
+  (lambda (self (id (+ 1 (hash-length emacs-channels)))
+                (package (find-package "(user)"))
+                (values (make-hash-table)))
+    (set! (emacs-channel-id self) id)
+    (set! (emacs-channel-package self) package)
+    (set! (emacs-channel-values self) values)
+    (hash-put! emacs-channels id self)))
+
+(def (find-emacs-channel id)
+  (hash-get emacs-channels id))
+
+(def (ensure-emacs-channel id)
+  (or (find-emacs-channel id)
+      (make-emacs-channel)))
+
+(def (emacs-channel-prompt chan)
+  (def pkg (emacs-channel-package chan))
+  (def pn (package-name pkg))
+  `(:prompt ,pn ,pn 0))
+#+end_src
+
+#+begin_src scheme :noweb-ref emacs-channel-send
+(defalias current-emacs-channel-abort rswank:param:abort)
+(defalias current-emacs-channel-package rswank:param:environment)
+(defalias current-emacs-channel-id rswank:param:current-id)
+
+(def emacs-channel-handlers (make-hash-table))
+
+(def (register-emacs-channel-handler! name fn)
+  (hash-put! emacs-channel-handlers name fn))
+
+(def (find-emacs-channel-handler name)
+  (hash-get emacs-channel-handlers name))
+
+(def (with-output-to-emacs-channel chan thunk)
+  (def id (emacs-channel-id chan))
+  (def OUT (open-string))
+  (parameterize ((current-output-port OUT)
+                 (current-error-port OUT))
+    (try
+     (spawn
+      (lambda ()
+;;; (:channel-send id `(:write-string "Spawning write thing"))
+        (let lp ((o? (peek-char OUT)))
+          #;(:channel-send
+          id `(:write-string ,(with-output-to-string "o? =>" (cut write o?))))
+          (if  (eof-object? o?) o?
+               (begin
+                 (:channel-send id `(:write-string ,(get-output-string OUT)))
+                 (lp (peek-char OUT)))))))
+     ;;; (:channel-send id `(:write-string "trying thunk\n"))
+
+     (let ((ret (thunk)))
+       (thread-yield!)
+       #;(:channel-send
+        id `(:write-string ,(with-output-to-string
+                              " => " (cut write ret))))
+       ret)
+     (finally
+      (force-output OUT)
+      (close-port OUT)))))
+
+(def (eval-in-emacs-channel sexp chan)
+  (def vals (emacs-channel-values chan))
+  (def n (hash-length vals))
+  (def id (current-emacs-channel-id))
+  (def pkg (emacs-channel-package chan))
+  (def ret
+    (with-output-to-emacs-channel
+     chan (lambda () (parameterize ((gx#current-expander-context pkg))
+                       (eval sexp)))))
+  (def valufy (lambda (v)
+                (set! n (+ 1 n))
+              (hash-put! vals n v)
+              (let ((str (with-output-to-string
+                           "" (cut write v))))
+                [str n str])))
+
+  (:channel-send id `(:write-values (,(valufy ret))))
+  (call-with-values (lambda _ ret)
+    (lambda vs
+      (unless (eq? (car vs) ret)
+        (let ((strvs (map valufy vs)))
+          (:channel-send id `(:write-values ,strvs))))
+        ret)))
+
+(register-emacs-channel-handler!
+ ':process
+ (lambda (str)
+   (def id (current-emacs-channel-id))
+   (def chan (find-emacs-channel id))
+   (def sexp (with-input-from-string str (cut read)))
+   (eval-in-emacs-channel sexp chan)
+   `(:channel-send ,id ,(emacs-channel-prompt chan))))
+
+
+
+(def (process-emacs-channel-form form)
+  (def id (current-emacs-channel-id))
+  (def name (car form))
+  (def handler (find-emacs-channel-handler name))
+  (if handler
+    (try (apply handler (cdr form))
+         (catch (e) ((current-emacs-channel-abort)
+                     (with-output-to-string
+                       "Handler Error: "
+                       (cut display-exception e)))))
+    ((current-emacs-channel-abort)
+     (string-append "Cannot find emacs channel handler for: "
+                    (symbol->string name)))))
+
+(def (:emacs-channel-send id form)
+  (let ((chan (find-emacs-channel id)))
+    (def (abort msg)
+      (:channel-send id `(:write-string ,msg))
+      (:channel-send id '(:write-value nil))
+      `(:channel-send ,id ,(emacs-channel-prompt chan)))
+    (call/cc
+      (lambda (exit)
+        (parameterize ((current-emacs-channel-abort
+                        (lambda (message)
+                          (exit (abort message))))
+                       (current-emacs-channel-id id))
+          (process-emacs-channel-form form)
+          #;(abort "mage it"))))))
+
+
+(rswank:define-slime-handler
+  (:emacs-channel-send id sexp) (:emacs-channel-send id sexp))
+#+end_src
+
+* ~(slynk-mrepl:create-mrepl 1)~
+
+Looking at ~*sly-events-for-sbcl*~ it returns the following.
+
+Let's give that a go.
+
+#+begin_src scheme :noweb-ref create-mrepl
+(rswank:register-slime-handler!
+ 'slynk-mrepl:create-mrepl
+ (lambda (n)
+   (def echan (ensure-emacs-channel n))
+   (let ((msg (string-append
+               "; SLY " (slynk-version-string)
+             (with-output-to-string
+               " ("
+               (cut display echan))
+             ")\n Global redirection not setup\n")))
+     (:channel-send n `(:write-string ,msg))
+     (:channel-send n `(:prompt "(user)" "top" 2 1))
+        [n (+ 1 n)])))
+
+
+#+end_src
+
+* /File/ ~gerbil-swank/slynk.ss~
+
+#+begin_src scheme :noweb yes :tangle "../gerbil-swank/slynk.ss"
+(import :std/os/pid
+        :std/sugar :std/format
+        :gerbil/gambit/exceptions
+        :gerbil/gambit/threads
+        :gerbil/gambit/ports
+        :gerbil/expander
+        :gerbil/gambit/os
+        :drewc/gerbil-swank/package
+        (prefix-in :drewc/gerbil-swank/r7rs/gerbil-swank |rswank:|))
+<<connection-info>>
+
+<<channel-send>>
+
+<<emacs-channel-send>>
+
+<<create-mrepl>>
+
+(rswank:register-slime-handler!
+ 'slynk:autodoc (lambda (thing . args)
+                  (list ':not-available 't)
+                  #;(if (not (string? thing))
+                    (set! thing ""))
+                  #;(apply (rswank:find-handler 'swank:autodoc)
+                    thing args)))
+
+(rswank:register-slime-handler! 'slynk:slynk-add-load-paths
+                                list)
+#+end_src
+
+
+* Hack existing?
+
+First things first. Trying to connect gives:
+
+[sly] Connecting to Slynk on port 4205..
+[sly] Evaluation aborted on Cannot find handler for: slynk:connection-info
+
+So, that's where it starts.
+
+** Find SBCL's version
+
+#+begin_src shell
+cd /tmp/ ; wget https://beta.quicklisp.org/quicklisp.lisp
+> (ql:quickload "slynk")
+#+end_src
+
+Then connect via sly after a create-server.
+
+#+begin_src lisp
+CL-USER> (maphash (lambda (k v) (format t "~A: ~A~%" k v)) slynk::*slyfuns*)
+PING: #<FUNCTION SLYNK:PING>
+CONNECTION-INFO: #<FUNCTION SLYNK:CONNECTION-INFO>
+TOGGLE-DEBUG-ON-SLYNK-ERROR: #<FUNCTION SLYNK:TOGGLE-DEBUG-ON-SLYNK-ERROR>
+INTERACTIVE-EVAL: #<FUNCTION SLYNK:INTERACTIVE-EVAL>
+EVAL-AND-GRAB-OUTPUT: #<FUNCTION SLYNK:EVAL-AND-GRAB-OUTPUT>
+INTERACTIVE-EVAL-REGION: #<FUNCTION SLYNK:INTERACTIVE-EVAL-REGION>
+RE-EVALUATE-DEFVAR: #<FUNCTION SLYNK:RE-EVALUATE-DEFVAR>
+PPRINT-EVAL: #<FUNCTION SLYNK:PPRINT-EVAL>
+SET-PACKAGE: #<FUNCTION SLYNK:SET-PACKAGE>
+ED-IN-EMACS: #<FUNCTION SLYNK:ED-IN-EMACS>
+INSPECT-IN-EMACS: #<FUNCTION SLYNK:INSPECT-IN-EMACS>
+VALUE-FOR-EDITING: #<FUNCTION SLYNK:VALUE-FOR-EDITING>
+COMMIT-EDITED-VALUE: #<FUNCTION SLYNK:COMMIT-EDITED-VALUE>
+SLY-DB-BREAK-WITH-DEFAULT-DEBUGGER: #<FUNCTION SLYNK:SLY-DB-BREAK-WITH-DEFAULT-DEBUGGER>
+BACKTRACE: #<FUNCTION SLYNK:BACKTRACE>
+DEBUGGER-INFO-FOR-EMACS: #<FUNCTION SLYNK:DEBUGGER-INFO-FOR-EMACS>
+INVOKE-NTH-RESTART: #<FUNCTION SLYNK:INVOKE-NTH-RESTART>
+SLY-DB-ABORT: #<FUNCTION SLYNK:SLY-DB-ABORT>
+SLY-DB-CONTINUE: #<FUNCTION SLYNK:SLY-DB-CONTINUE>
+SIMPLE-BREAK: #<FUNCTION SLYNK:SIMPLE-BREAK>
+THROW-TO-TOPLEVEL: #<FUNCTION SLYNK:THROW-TO-TOPLEVEL>
+INVOKE-NTH-RESTART-FOR-EMACS: #<FUNCTION SLYNK:INVOKE-NTH-RESTART-FOR-EMACS>
+EVAL-STRING-IN-FRAME: #<FUNCTION SLYNK:EVAL-STRING-IN-FRAME>
+PPRINT-EVAL-STRING-IN-FRAME: #<FUNCTION SLYNK:PPRINT-EVAL-STRING-IN-FRAME>
+FRAME-PACKAGE-NAME: #<FUNCTION SLYNK:FRAME-PACKAGE-NAME>
+FRAME-LOCALS-AND-CATCH-TAGS: #<FUNCTION SLYNK:FRAME-LOCALS-AND-CATCH-TAGS>
+SLY-DB-DISASSEMBLE: #<FUNCTION SLYNK:SLY-DB-DISASSEMBLE>
+SLY-DB-RETURN-FROM-FRAME: #<FUNCTION SLYNK:SLY-DB-RETURN-FROM-FRAME>
+SLY-DB-BREAK: #<FUNCTION SLYNK:SLY-DB-BREAK>
+SLY-DB-STEP: #<FUNCTION SLYNK:SLY-DB-STEP>
+SLY-DB-NEXT: #<FUNCTION SLYNK:SLY-DB-NEXT>
+SLY-DB-OUT: #<FUNCTION SLYNK:SLY-DB-OUT>
+TOGGLE-BREAK-ON-SIGNALS: #<FUNCTION SLYNK:TOGGLE-BREAK-ON-SIGNALS>
+SDLB-PRINT-CONDITION: #<FUNCTION SLYNK:SDLB-PRINT-CONDITION>
+COMPILE-FILE-FOR-EMACS: #<FUNCTION SLYNK:COMPILE-FILE-FOR-EMACS>
+COMPILE-STRING-FOR-EMACS: #<FUNCTION SLYNK:COMPILE-STRING-FOR-EMACS>
+COMPILE-MULTIPLE-STRINGS-FOR-EMACS: #<FUNCTION SLYNK:COMPILE-MULTIPLE-STRINGS-FOR-EMACS>
+COMPILE-FILE-IF-NEEDED: #<FUNCTION SLYNK:COMPILE-FILE-IF-NEEDED>
+LOAD-FILE: #<FUNCTION SLYNK:LOAD-FILE>
+SLYNK-REQUIRE: #<FUNCTION SLYNK:SLYNK-REQUIRE>
+SLYNK-ADD-LOAD-PATHS: #<FUNCTION SLYNK:SLYNK-ADD-LOAD-PATHS>
+SLYNK-MACROEXPAND-1: #<FUNCTION SLYNK:SLYNK-MACROEXPAND-1>
+SLYNK-MACROEXPAND: #<FUNCTION SLYNK:SLYNK-MACROEXPAND>
+SLYNK-MACROEXPAND-ALL: #<FUNCTION SLYNK:SLYNK-MACROEXPAND-ALL>
+SLYNK-COMPILER-MACROEXPAND-1: #<FUNCTION SLYNK:SLYNK-COMPILER-MACROEXPAND-1>
+SLYNK-COMPILER-MACROEXPAND: #<FUNCTION SLYNK:SLYNK-COMPILER-MACROEXPAND>
+SLYNK-EXPAND-1: #<FUNCTION SLYNK:SLYNK-EXPAND-1>
+SLYNK-EXPAND: #<FUNCTION SLYNK:SLYNK-EXPAND>
+SLYNK-FORMAT-STRING-EXPAND: #<FUNCTION SLYNK:SLYNK-FORMAT-STRING-EXPAND>
+DISASSEMBLE-FORM: #<FUNCTION SLYNK:DISASSEMBLE-FORM>
+OPERATOR-ARGLIST: #<FUNCTION SLYNK:OPERATOR-ARGLIST>
+DESCRIBE-SYMBOL: #<FUNCTION SLYNK:DESCRIBE-SYMBOL>
+DESCRIBE-FUNCTION: #<FUNCTION SLYNK:DESCRIBE-FUNCTION>
+DESCRIBE-DEFINITION-FOR-EMACS: #<FUNCTION SLYNK:DESCRIBE-DEFINITION-FOR-EMACS>
+DOCUMENTATION-SYMBOL: #<FUNCTION SLYNK:DOCUMENTATION-SYMBOL>
+LIST-ALL-PACKAGE-NAMES: #<FUNCTION SLYNK:LIST-ALL-PACKAGE-NAMES>
+SLYNK-TOGGLE-TRACE: #<FUNCTION SLYNK:SLYNK-TOGGLE-TRACE>
+UNTRACE-ALL: #<FUNCTION SLYNK:UNTRACE-ALL>
+UNDEFINE-FUNCTION: #<FUNCTION SLYNK:UNDEFINE-FUNCTION>
+UNINTERN-SYMBOL: #<FUNCTION SLYNK:UNINTERN-SYMBOL>
+SLYNK-DELETE-PACKAGE: #<FUNCTION SLYNK:SLYNK-DELETE-PACKAGE>
+FIND-DEFINITION-FOR-THING: #<FUNCTION SLYNK:FIND-DEFINITION-FOR-THING>
+FIND-SOURCE-LOCATION-FOR-EMACS: #<FUNCTION SLYNK:FIND-SOURCE-LOCATION-FOR-EMACS>
+FIND-DEFINITIONS-FOR-EMACS: #<FUNCTION SLYNK:FIND-DEFINITIONS-FOR-EMACS>
+XREF: #<FUNCTION SLYNK:XREF>
+XREFS: #<FUNCTION SLYNK:XREFS>
+INIT-INSPECTOR: #<FUNCTION SLYNK:INIT-INSPECTOR>
+INSPECTOR-NTH-PART: #<FUNCTION SLYNK:INSPECTOR-NTH-PART>
+INSPECTOR-NTH-PART-OR-LOSE: #<FUNCTION SLYNK:INSPECTOR-NTH-PART-OR-LOSE>
+INSPECT-NTH-PART: #<FUNCTION SLYNK:INSPECT-NTH-PART>
+INSPECTOR-RANGE: #<FUNCTION SLYNK:INSPECTOR-RANGE>
+INSPECTOR-CALL-NTH-ACTION: #<FUNCTION SLYNK:INSPECTOR-CALL-NTH-ACTION>
+INSPECTOR-POP: #<FUNCTION SLYNK:INSPECTOR-POP>
+INSPECTOR-NEXT: #<FUNCTION SLYNK:INSPECTOR-NEXT>
+INSPECTOR-REINSPECT: #<FUNCTION SLYNK:INSPECTOR-REINSPECT>
+INSPECTOR-TOGGLE-VERBOSE: #<FUNCTION SLYNK:INSPECTOR-TOGGLE-VERBOSE>
+INSPECTOR-EVAL: #<FUNCTION SLYNK:INSPECTOR-EVAL>
+INSPECTOR-HISTORY: #<FUNCTION SLYNK:INSPECTOR-HISTORY>
+QUIT-INSPECTOR: #<FUNCTION SLYNK:QUIT-INSPECTOR>
+DESCRIBE-INSPECTEE: #<FUNCTION SLYNK:DESCRIBE-INSPECTEE>
+DESCRIBE-INSPECTOR-PART: #<FUNCTION SLYNK:DESCRIBE-INSPECTOR-PART>
+PPRINT-INSPECTOR-PART: #<FUNCTION SLYNK:PPRINT-INSPECTOR-PART>
+INSPECT-IN-FRAME: #<FUNCTION SLYNK:INSPECT-IN-FRAME>
+INSPECT-CURRENT-CONDITION: #<FUNCTION SLYNK:INSPECT-CURRENT-CONDITION>
+INSPECT-FRAME-VAR: #<FUNCTION SLYNK:INSPECT-FRAME-VAR>
+PPRINT-FRAME-VAR: #<FUNCTION SLYNK:PPRINT-FRAME-VAR>
+DESCRIBE-FRAME-VAR: #<FUNCTION SLYNK:DESCRIBE-FRAME-VAR>
+EVAL-FOR-INSPECTOR: #<FUNCTION SLYNK:EVAL-FOR-INSPECTOR>
+LIST-THREADS: #<FUNCTION SLYNK:LIST-THREADS>
+QUIT-THREAD-BROWSER: #<FUNCTION SLYNK:QUIT-THREAD-BROWSER>
+DEBUG-NTH-THREAD: #<FUNCTION SLYNK:DEBUG-NTH-THREAD>
+KILL-NTH-THREAD: #<FUNCTION SLYNK:KILL-NTH-THREAD>
+START-SLYNK-SERVER-IN-THREAD: #<FUNCTION SLYNK:START-SLYNK-SERVER-IN-THREAD>
+MOP: #<FUNCTION SLYNK:MOP>
+UPDATE-INDENTATION-INFORMATION: #<FUNCTION SLYNK:UPDATE-INDENTATION-INFORMATION>
+IO-SPEED-TEST: #<FUNCTION SLYNK:IO-SPEED-TEST>
+FLOW-CONTROL-TEST: #<FUNCTION SLYNK:FLOW-CONTROL-TEST>
+SIMPLE-COMPLETIONS: #<FUNCTION SLYNK-COMPLETION:SIMPLE-COMPLETIONS>
+FLEX-COMPLETIONS: #<FUNCTION SLYNK-COMPLETION:FLEX-COMPLETIONS>
+APROPOS-LIST-FOR-EMACS: #<FUNCTION SLYNK-APROPOS:APROPOS-LIST-FOR-EMACS>
+COMPILE-FOR-STICKERS: #<FUNCTION SLYNK-STICKERS:COMPILE-FOR-STICKERS>
+KILL-STICKERS: #<FUNCTION SLYNK-STICKERS:KILL-STICKERS>
+TOGGLE-BREAK-ON-STICKERS: #<FUNCTION SLYNK-STICKERS:TOGGLE-BREAK-ON-STICKERS>
+TOTAL-RECORDINGS: #<FUNCTION SLYNK-STICKERS:TOTAL-RECORDINGS>
+SEARCH-FOR-RECORDING: #<FUNCTION SLYNK-STICKERS:SEARCH-FOR-RECORDING>
+FETCH: #<FUNCTION SLYNK-STICKERS:FETCH>
+FORGET: #<FUNCTION SLYNK-STICKERS:FORGET>
+FIND-RECORDING-OR-LOSE: #<FUNCTION SLYNK-STICKERS:FIND-RECORDING-OR-LOSE>
+INSPECT-STICKER: #<FUNCTION SLYNK-STICKERS:INSPECT-STICKER>
+INSPECT-STICKER-RECORDING: #<FUNCTION SLYNK-STICKERS:INSPECT-STICKER-RECORDING>
+TRACE-FORMAT: #<FUNCTION SLYNK-TRACE-DIALOG:TRACE-FORMAT>
+TRACE-OR-LOSE: #<FUNCTION SLYNK-TRACE-DIALOG:TRACE-OR-LOSE>
+REPORT-PARTIAL-TREE: #<FUNCTION SLYNK-TRACE-DIALOG:REPORT-PARTIAL-TREE>
+REPORT-SPECS: #<FUNCTION SLYNK-TRACE-DIALOG:REPORT-SPECS>
+REPORT-TOTAL: #<FUNCTION SLYNK-TRACE-DIALOG:REPORT-TOTAL>
+CLEAR-TRACE-TREE: #<FUNCTION SLYNK-TRACE-DIALOG:CLEAR-TRACE-TREE>
+TRACE-PART-OR-LOSE: #<FUNCTION SLYNK-TRACE-DIALOG:TRACE-PART-OR-LOSE>
+TRACE-ARGUMENTS-OR-LOSE: #<FUNCTION SLYNK-TRACE-DIALOG:TRACE-ARGUMENTS-OR-LOSE>
+INSPECT-TRACE-PART: #<FUNCTION SLYNK-TRACE-DIALOG:INSPECT-TRACE-PART>
+PPRINT-TRACE-PART: #<FUNCTION SLYNK-TRACE-DIALOG:PPRINT-TRACE-PART>
+DESCRIBE-TRACE-PART: #<FUNCTION SLYNK-TRACE-DIALOG:DESCRIBE-TRACE-PART>
+INSPECT-TRACE: #<FUNCTION SLYNK-TRACE-DIALOG:INSPECT-TRACE>
+TRACE-LOCATION: #<FUNCTION SLYNK-TRACE-DIALOG:TRACE-LOCATION>
+DIALOG-TRACE: #<FUNCTION SLYNK-TRACE-DIALOG:DIALOG-TRACE>
+DIALOG-UNTRACE: #<FUNCTION SLYNK-TRACE-DIALOG:DIALOG-UNTRACE>
+DIALOG-TOGGLE-TRACE: #<FUNCTION SLYNK-TRACE-DIALOG:DIALOG-TOGGLE-TRACE>
+DIALOG-TRACED-P: #<FUNCTION SLYNK-TRACE-DIALOG:DIALOG-TRACED-P>
+DIALOG-UNTRACE-ALL: #<FUNCTION SLYNK-TRACE-DIALOG:DIALOG-UNTRACE-ALL>
+PACKAGE=: #<FUNCTION SLYNK:PACKAGE=>
+EXPORT-SYMBOL-FOR-EMACS: #<FUNCTION SLYNK:EXPORT-SYMBOL-FOR-EMACS>
+IMPORT-SYMBOL-FOR-EMACS: #<FUNCTION SLYNK:IMPORT-SYMBOL-FOR-EMACS>
+UNEXPORT-SYMBOL-FOR-EMACS: #<FUNCTION SLYNK:UNEXPORT-SYMBOL-FOR-EMACS>
+EXPORT-STRUCTURE: #<FUNCTION SLYNK:EXPORT-STRUCTURE>
+CREATE-MREPL: #<FUNCTION SLYNK-MREPL:CREATE-MREPL>
+GLOBALLY-SAVE-OBJECT: #<FUNCTION SLYNK-MREPL:GLOBALLY-SAVE-OBJECT>
+EVAL-FOR-MREPL: #<FUNCTION SLYNK-MREPL:EVAL-FOR-MREPL>
+INSPECT-ENTRY: #<FUNCTION SLYNK-MREPL:INSPECT-ENTRY>
+DESCRIBE-ENTRY: #<FUNCTION SLYNK-MREPL:DESCRIBE-ENTRY>
+PPRINT-ENTRY: #<FUNCTION SLYNK-MREPL:PPRINT-ENTRY>
+GUESS-AND-SET-PACKAGE: #<FUNCTION SLYNK-MREPL:GUESS-AND-SET-PACKAGE>
+COPY-TO-REPL: #<FUNCTION SLYNK-MREPL:COPY-TO-REPL>
+SYNC-PACKAGE-AND-DEFAULT-DIRECTORY: #<FUNCTION SLYNK-MREPL:SYNC-PACKAGE-AND-DEFAULT-DIRECTORY>
+AUTODOC: #<FUNCTION SLYNK:AUTODOC>
+COMPLETE-FORM: #<FUNCTION SLYNK:COMPLETE-FORM>
+#+end_src
+
+** Connect to gerbil via slime and find our handlers
+
+#+begin_src scheme
+(import (prefix-in :drewc/gerbil-swank |swank:|))
+(user)> (for-each (lambda (p) (displayln (car p)))
+                  (table->list swank:*handlers*))
+swank:interactive-eval
+swank:backtrace
+swank-repl:listener-get-value
+swank:operator-arglist
+swank:inspector-reinspect
+swank:inspect-current-condition
+swank:init-inspector
+swank:inspector-range
+swank:list-threads
+swank-repl:clear-repl-variables
+swank:inspect-nth-part
+swank:frame-source-location
+swank:inspector-history
+swank:commit-edited-value
+swank:lookup-presented-object
+swank:complete-form
+swank:connection-info
+swank:describe-definition-for-emacs
+swank:init-presentations
+swank:value-for-editing
+swank-repl:listener-eval
+swank:inspector-toggle-verbose
+swank-repl:listener-save-value
+swank-repl:create-repl
+swank:inspect-frame-var
+swank:load-file
+swank:throw-to-toplevel
+swank:inspect-presentation
+swank:swank-expand-1
+swank:inspector-pop
+swank:completions
+swank:set-package
+swank:swank-require
+swank:pprint-inspector-part
+swank:describe-symbol
+swank:fuzzy-completions
+swank:apropos-list-for-emacs
+swank:inspector-call-nth-action
+swank:frame-locals-and-catch-tags
+swank:clear-repl-results
+swank:buffer-first-change
+swank:describe-function
+swank::describe-to-string
+swank:swank-macroexpand-all
+swank:inspector-next
+swank:compile-string-for-emacs
+cl:nth-value
+swank:fuzzy-completion-selected
+swank::menu-choices-for-presentation-id
+:emacs-rex
+swank:autodoc
+swank:quit-lisp
+swank:list-all-package-names
+swank:simple-completions
+#+end_src

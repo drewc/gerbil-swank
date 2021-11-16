@@ -58,8 +58,10 @@
 (define param:active-condition (make-parameter #f))
 (define log-port (current-output-port))
 
+(define input-swank-forms '())
 (define (process-one-message)
   (let ((form (read-packet (param:slime-in-port))))
+    (set! input-swank-forms (cons form input-swank-forms))
     (write-message (process-form form #f))))
 
 (define (write-message sexp)
@@ -72,15 +74,19 @@
 
 (define (process-form form env-name)
   (let ((key (car form)))
+    (set! input-swank-forms (cons key input-swank-forms))
     (let ((h (find-handler key)))
+      (set! input-swank-forms (cons h input-swank-forms))
       (if h
-          (with-exception-handler
-           (lambda (condition)
-             ($handle-condition condition)
-             (swank/abort ($error-description condition)))
-           (lambda () (apply h (cdr form))))
+        (with-exception-handler
+         (lambda (condition)
+           ($handle-condition condition)
+           (swank/abort ($error-description condition)))
+         (lambda () (apply h (cdr form))))
+        (begin
+          (set! input-swank-forms (cons `(no-handler ,(car form)) input-swank-forms))
           (swank/abort (string-append "Cannot find handler for: "
-                                      (symbol->string (car form))))))))
+                                      (symbol->string (car form)))))))))
 
 (define start-swank
   (case-lambda (() (start-swank 4005))
@@ -220,7 +226,11 @@ The secondary value indicates the absence of an entry."
       (let ((id (next-presentation-id)))
         (hash-table-set! *presentations* id value)
         (write-message `(:presentation-start ,id ,type))
-        (swank/write-string (write-to-string value) type)
+        (swank/write-string (let ((o (open-output-string)))
+                              (pp value o)
+                              (let ((s (get-output-string o)))
+                                (substring s 0 (- (string-length s) 1))))
+                            type)
         (write-message `(:presentation-end ,id ,type))
         (swank/write-string "\n" type)
         'nil)))
