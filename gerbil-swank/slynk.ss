@@ -1,10 +1,7 @@
 (import :std/os/pid
         :std/sugar :std/format
-        :gerbil/gambit/exceptions
-        :gerbil/gambit/threads
-        :gerbil/gambit/ports
+        :gerbil/gambit
         :gerbil/expander
-        :gerbil/gambit/os
         :drewc/gerbil-swank/package
         (prefix-in :drewc/gerbil-swank/r7rs/gerbil-swank |rswank:|))
 
