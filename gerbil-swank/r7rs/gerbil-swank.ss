@@ -18,9 +18,9 @@
           (only (gerbil/core) hash-ref hash-put! hash-for-each hash-length
                 make-hash-table exit  hash->list filter hash-remove!
                 values->list ;; values->list should go when let-values works
-                ) 
+                )
           (only (gerbil/expander) module-context? module-context-ns expander-context-id expander-context-table current-expander-module-registry)
-          (only (gerbil/gambit/exceptions) display-exception)
+          (only (gerbil/runtime/error) display-exception)
           (drewc gerbil-swank swank)
           (drewc gerbil-swank core))
   (include "specific/gerbil.scm")

@@ -12,4 +12,5 @@
     "gerbil-swank/r7rs/gerbil-swank"
     "gerbil-swank/package"
     "gerbil-swank/slynk"
-    "gerbil-swank") verbose: 10)
+    "gerbil-swank")
+  #;verbose: #;10)
